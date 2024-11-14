@@ -1,4 +1,4 @@
-require 'azure/storage'
+require 'azure/storage/blob'
 
 module CarrierWave
   module Storage
