@@ -1,5 +1,5 @@
-require 'azure/blob'
-require 'azure/storage/common'
+# require 'azure/storage/blob'
+# require 'azure/storage/common'
 
 module CarrierWave
   module Storage
