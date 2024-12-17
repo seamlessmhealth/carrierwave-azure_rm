@@ -43,7 +43,7 @@ module CarrierWave
           @path = path
         end
 
-        def ensure_container_exists(name)
+        def ensure_container_exists
           unless @connection.get_container_properties.present?
             @connection.create_container(access_level_option)
           end
@@ -51,14 +51,14 @@ module CarrierWave
 
         def access_level
           unless @public_access_level
-            container, signed_identifiers = @connection.get_container_acl(@uploader.send("azure_container"))
-            @public_access_level = container.public_access_level || 'private' # when container access level is private, it returns nil
+            container_metadata = @connection.get_container_properties.metadata
+            @public_access_level = container_metadata["x-ms-blob-public-access"] || 'private' # when container access level is private, it returns nil
           end
           @public_access_level
         end
 
         def store!(file)
-          ensure_container_exists(@uploader.send("azure_container"))
+          ensure_container_exists
           @content_type = file.content_type
           file_to_send  = ::File.open(file.file, 'rb')
           blocks        = []
@@ -67,12 +67,12 @@ module CarrierWave
             block_id = Base64.urlsafe_encode64(SecureRandom.uuid)
 
             @content = file_to_send.read 4194304 # Send 4MB chunk
-            @connection.put_blob_block @uploader.azure_container, @path, block_id, @content
+            @connection.put_blob_block @path, block_id, @content
             blocks << [block_id]
           end
 
           # Commit block blobs
-          @connection.commit_blob_blocks @uploader.azure_container, @path, blocks, content_type: @content_type
+          @connection.commit_blob_blocks @path, blocks, content_type: @content_type
 
           true
         end
@@ -125,7 +125,7 @@ module CarrierWave
 
         def delete
           begin
-            @connection.delete_blob @uploader.azure_container, @path
+            @connection.delete_blob @path
             true
           rescue ::AzureBlob::Http::Error
             false
@@ -161,14 +161,14 @@ module CarrierWave
 
         def load_blob
           @blob = begin
-            @connection.get_blob_properties @uploader.azure_container, @path
+            @connection.get_blob_properties @path
           rescue ::AzureBlob::Http::Error
           end
         end
 
         def load_content
           @blob, @content = begin
-            @connection.get_blob @uploader.azure_container, @path
+            @connection.get_blob @path
           rescue ::AzureBlob::Http::Error
           end
         end
