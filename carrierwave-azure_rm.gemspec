@@ -18,6 +18,7 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency 'carrierwave'
   gem.add_dependency 'azure-blob', '~> 0.5.4'
+  gem.add_dependency 'azure-storage-common', '~> 2.0'
 
   gem.add_development_dependency 'rake'
   gem.add_development_dependency 'rspec', '~> 3'
