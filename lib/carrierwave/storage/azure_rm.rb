@@ -44,8 +44,8 @@ module CarrierWave
         end
 
         def ensure_container_exists(name)
-          if @connection.get_container_properties.metadata.fetch("name", nil) != name
-            @connection.create_container(name, access_level_option)
+          unless @connection.get_container_properties.present?
+            @connection.create_container(access_level_option)
           end
         end
 
@@ -137,7 +137,7 @@ module CarrierWave
         def access_level_option
           lvl = @uploader.public_access_level
           raise "Invalid Access level #{lvl}." unless %w(private blob container).include? lvl
-          lvl == 'private' ? {} : { :public_access_level => lvl }
+          lvl == 'private' ? {} : { :public_access => lvl }
         end
 
         def expires_at
