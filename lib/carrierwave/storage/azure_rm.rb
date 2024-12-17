@@ -13,7 +13,7 @@ module CarrierWave
 
       def connection
         @connection ||= begin
-          AzureBlob::Client.new(
+          ::AzureBlob::Client.new(
             account_name: uploader.azure_storage_account_name,
             access_key: uploader.azure_storage_access_key,
             container: uploader.azure_container,
@@ -23,7 +23,7 @@ module CarrierWave
 
       def signer
         @signer ||= begin
-          AzureBlob::SharedKeySigner.new(
+          ::AzureBlob::SharedKeySigner.new(
             account_name: uploader.azure_storage_account_name, 
             access_key: uploader.azure_storage_access_key,
             host: uploader.azure_storage_blob_host
@@ -125,7 +125,7 @@ module CarrierWave
           begin
             @connection.delete_blob @uploader.azure_container, @path
             true
-          rescue AzureBlob::Http::Error
+          rescue ::AzureBlob::Http::Error
             false
           end
         end
@@ -160,14 +160,14 @@ module CarrierWave
         def load_blob
           @blob = begin
             @connection.get_blob_properties @uploader.azure_container, @path
-          rescue AzureBlob::Http::Error
+          rescue ::AzureBlob::Http::Error
           end
         end
 
         def load_content
           @blob, @content = begin
             @connection.get_blob @uploader.azure_container, @path
-          rescue AzureBlob::Http::Error
+          rescue ::AzureBlob::Http::Error
           end
         end
       end
