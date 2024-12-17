@@ -44,7 +44,7 @@ module CarrierWave
         end
 
         def ensure_container_exists(name)
-          unless @connection.list_containers.any? { |c| c.name == name }
+          if @connection.get_container_properties().fetch("x-ms-meta-name", nil) != name
             @connection.create_container(name, access_level_option)
           end
         end
