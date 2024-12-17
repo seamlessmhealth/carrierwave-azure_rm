@@ -1,6 +1,3 @@
-# require 'azure/storage/blob'
-require 'azure/storage/common'
-
 module CarrierWave
   module Storage
     class AzureRM < Abstract
@@ -16,18 +13,21 @@ module CarrierWave
 
       def connection
         @connection ||= begin
-          common_client = ::Azure::Storage::Common::Client.create(
-            storage_account_name: uploader.azure_storage_account_name,
-            storage_access_key: uploader.azure_storage_access_key,
-            # storage_blob_host: uploader.azure_storage_blob_host
+          AzureBlob::Client.new(
+            account_name: uploader.azure_storage_account_name,
+            access_key: uploader.azure_storage_access_key,
+            container: uploader.azure_container,
           )
-          ::Azure::Storage::Blob::BlobService.new(client: common_client)
         end
       end
 
       def signer
         @signer ||= begin
-          ::Azure::Storage::Common::Core::Auth::SharedAccessSignature.new
+          AzureBlob::SharedKeySigner.new(
+            account_name: uploader.azure_storage_account_name, 
+            access_key: uploader.azure_storage_access_key,
+            host: uploader.azure_storage_blob_host
+          )
         end
       end
 
@@ -125,7 +125,7 @@ module CarrierWave
           begin
             @connection.delete_blob @uploader.azure_container, @path
             true
-          rescue ::Azure::Core::Http::HTTPError
+          rescue AzureBlob::Http::Error
             false
           end
         end
@@ -160,14 +160,14 @@ module CarrierWave
         def load_blob
           @blob = begin
             @connection.get_blob_properties @uploader.azure_container, @path
-          rescue ::Azure::Core::Http::HTTPError
+          rescue AzureBlob::Http::Error
           end
         end
 
         def load_content
           @blob, @content = begin
             @connection.get_blob @uploader.azure_container, @path
-          rescue ::Azure::Core::Http::HTTPError
+          rescue AzureBlob::Http::Error
           end
         end
       end
