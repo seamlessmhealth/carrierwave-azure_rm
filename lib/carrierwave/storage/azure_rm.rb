@@ -19,7 +19,7 @@ module CarrierWave
           common_client = ::Azure::Storage::Common::Client.create(
             storage_account_name: uploader.azure_storage_account_name,
             storage_access_key: uploader.azure_storage_access_key,
-            storage_blob_host: uploader.azure_storage_blob_host
+            # storage_blob_host: uploader.azure_storage_blob_host
           )
           ::Azure::Storage::Blob::BlobService.new(client: common_client)
         end
