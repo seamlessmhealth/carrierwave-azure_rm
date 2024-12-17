@@ -1,3 +1,5 @@
+require 'azure/blob'
+
 module CarrierWave
   module Storage
     class AzureRM < Abstract
