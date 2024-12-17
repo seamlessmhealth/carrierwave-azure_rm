@@ -16,9 +16,11 @@ module CarrierWave
 
       def connection
         @connection ||= begin
-          %i(storage_account_name storage_access_key storage_blob_host).each do |key|
-            ::Azure::Storage::Common::Default.send("#{key}=", uploader.send("azure_#{key}"))
-          end
+          ::Azure::Storage::Common::Client.create(
+            storage_account_name: uploader.azure_storage_account_name,
+            storage_access_key: uploader.azure_storage_access_key,
+            storage_blob_host: uploader.azure_storage_blob_host
+          )
           ::Azure::Storage::Blob::BlobService.new
         end
       end
