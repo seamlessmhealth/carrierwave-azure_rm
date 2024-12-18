@@ -64,8 +64,7 @@ module CarrierWave
           blocks        = []
 
           until file_to_send.eof?
-          index = Base64.urlsafe_encode64(SecureRandom.uuid)
-
+            index = blocks.size
             @content = file_to_send.read 4194304 # Send 4MB chunk
             begin
               block_id = @connection.put_blob_block @path, index, @content
