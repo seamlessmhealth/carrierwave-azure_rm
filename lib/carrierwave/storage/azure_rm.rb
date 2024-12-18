@@ -63,26 +63,28 @@ module CarrierWave
           file_to_send  = ::File.open(file.file, 'rb')
           blocks        = []
 
-          until file_to_send.eof?
-            index = blocks.size
-            @content = file_to_send.read 4194304 # Send 4MB chunk
-            begin
-              block_id = @connection.put_blob_block @path, index, @content
-            rescue ::AzureBlob::Http::Error => e
-              p e.body
-              p e.status
-              raise e.body
-            end
-            blocks << [block_id]
-          end
+          @connection.create_block_blob @path, file_to_send, content_type: @content_type
 
-          begin
-            @connection.commit_blob_blocks @path, blocks, content_type: @content_type
-          rescue ::AzureBlob::Http::Error => e
-            p e.body
-            p e.status
-            raise e.body
-          end
+          # until file_to_send.eof?
+          #   index = blocks.size
+          #   @content = file_to_send.read 4194304 # Send 4MB chunk
+          #   begin
+          #     block_id = @connection.put_blob_block @path, index, @content
+          #   rescue ::AzureBlob::Http::Error => e
+          #     p e.body
+          #     p e.status
+          #     raise e.body
+          #   end
+          #   blocks << [block_id]
+          # end
+
+          # begin
+          #   @connection.commit_blob_blocks @path, blocks, content_type: @content_type
+          # rescue ::AzureBlob::Http::Error => e
+          #   p e.body
+          #   p e.status
+          #   raise e.body
+          # end
           true
         end
 
