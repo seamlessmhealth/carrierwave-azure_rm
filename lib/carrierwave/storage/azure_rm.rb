@@ -64,8 +64,17 @@ module CarrierWave
           blocks        = []
 
           until file_to_send.eof?
+            # block_id = Base64.urlsafe_encode64(SecureRandom.uuid)
+
             @content = file_to_send.read 4194304 # Send 4MB chunk
-            block_id = @connection.put_blob_block @path, blocks.count, @content
+            begin
+              block_id = @connection.put_blob_block @path, blocks.count, @content
+            rescue ::AzureBlob::Http::Error => e
+              p e.body
+              p e.status
+              raise e.body
+              # Block already exists, ignore
+            end
             blocks << [block_id]
           end
 
