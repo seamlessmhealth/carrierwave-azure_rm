@@ -73,14 +73,17 @@ module CarrierWave
               p e.body
               p e.status
               raise e.body
-              # Block already exists, ignore
             end
             blocks << [block_id]
           end
 
-          # Commit block blobs
-          @connection.commit_blob_blocks @path, blocks, content_type: @content_type
-
+          begin
+            @connection.commit_blob_blocks @path, blocks, content_type: @content_type
+          rescue ::AzureBlob::Http::Error => e
+            p e.body
+            p e.status
+            raise e.body
+          end
           true
         end
 
