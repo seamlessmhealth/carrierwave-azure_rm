@@ -157,7 +157,7 @@ module CarrierWave
         end
 
         def load_content
-          @blob, @content = begin
+          @content = begin
             @connection.get_blob @path
           rescue ::AzureBlob::Http::Error
           end
