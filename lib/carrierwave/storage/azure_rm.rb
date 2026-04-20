@@ -89,7 +89,7 @@ module CarrierWave
         end
 
         def content_type
-          @content_type = blob.properties[:content_type] if @content_type.nil? && !blob.nil?
+          @content_type = blob.content_type if @content_type.nil? && !blob.nil?
           @content_type
         end
 
@@ -102,7 +102,7 @@ module CarrierWave
         end
 
         def size
-          blob.properties[:content_length] unless blob.nil?
+          blob.size unless blob.nil?
         end
 
         def filename
