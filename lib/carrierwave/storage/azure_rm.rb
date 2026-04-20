@@ -60,10 +60,10 @@ module CarrierWave
         def store!(file)
           ensure_container_exists
           @content_type = file.content_type
-          file_to_send  = ::File.open(file.file, 'rb')
-          blocks        = []
 
-          @connection.create_block_blob @path, file_to_send, content_type: @content_type
+          ::File.open(file.file, 'rb') do |file_to_send|
+            @connection.create_block_blob @path, file_to_send, content_type: @content_type
+          end
           true
         end
 
@@ -106,7 +106,7 @@ module CarrierWave
         end
 
         def filename
-          URI.decode(url(skip_signing: true)).gsub(/.*\/(.*?$)/, '\1')
+          URI::DEFAULT_PARSER.unescape(url(skip_signing: true)).gsub(/.*\/(.*?$)/, '\1')
         end
 
         def extension
