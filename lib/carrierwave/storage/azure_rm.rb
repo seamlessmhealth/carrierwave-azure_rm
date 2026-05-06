@@ -72,14 +72,13 @@ module CarrierWave
           if @uploader.asset_host
             "#{@uploader.asset_host}/#{path}"
           else
-            uri = @connection.generate_uri(path)
             if sign_url?(options)
-              @signer.signed_uri(uri, false, { permissions: 'r',
-                                               resource: 'b',
-                                               start: 1.minute.ago.utc.iso8601,
-                                               expiry: expires_at}).to_s
+              @connection.signed_uri(@path,
+                                     permissions: 'r',
+                                     start: 1.minute.ago.utc.iso8601,
+                                     expiry: expires_at).to_s
             else
-              uri.to_s
+              @connection.generate_uri(path).to_s
             end
           end
         end
