@@ -75,7 +75,6 @@ module CarrierWave
             if sign_url?(options)
               @connection.signed_uri(@path,
                                      permissions: 'r',
-                                     start: 1.minute.ago.utc.iso8601,
                                      expiry: expires_at).to_s
             else
               @connection.generate_uri(path).to_s
